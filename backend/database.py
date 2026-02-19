@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-_DEFAULT_DB = os.path.join(os.path.dirname(__file__), "chiptrace_dev.db")
+_DEFAULT_DB = os.path.join(os.path.dirname(__file__), "chiptrace.db")
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     f"sqlite:///{_DEFAULT_DB}"
