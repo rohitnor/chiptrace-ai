@@ -60,6 +60,10 @@ def build_delay_features(tree_state: Dict[str, Any], supplier_data: Dict = None)
         s.get("resilience.demand_shock.tier1_finished_goods", {}).get("score", 75),
         supplier_data.get("financial_health_score", 70) if supplier_data else 70,
         s.get("quality.demand_signal.bullwhip", {}).get("score", 75),
+        # Additional features to match training data
+        1,  # disruption_encoded (default: no disruption)
+        2,  # chip_node_risk (default: medium risk 28nm node)
+        85,  # fill_rate (default: 85% fill rate)
     ]
     return np.array(feats).reshape(1, -1)
 
@@ -69,13 +73,14 @@ def build_resolution_features(disruption_type: str, severity: str, tree_state: D
     severity_map = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 
     feats = [
-        disruption_map.get(disruption_type, 5),
-        severity_map.get(severity, 2),
-        tree_state.get("resilience.demand_shock.die_bank", {}).get("score", 75) if tree_state else 75,
-        tree_state.get("resilience.demand_shock.tier1_finished_goods", {}).get("score", 75) if tree_state else 75,
-        tree_state.get("resilience.demand_shock.lta_utilization", {}).get("score", 75) if tree_state else 75,
+        disruption_map.get(disruption_type, 5),  # disruption_encoded
+        severity_map.get(severity, 2),          # severity_encoded
+        tree_state.get("resilience.demand_shock.die_bank", {}).get("score", 75) if tree_state else 75,  # die_bank_score
+        tree_state.get("resilience.demand_shock.tier1_finished_goods", {}).get("score", 75) if tree_state else 75,  # tier1_stock_days
+        1,  # lta_flex_available default
         1,  # is_single_source default
-        1,  # die_bank_available default
+        1,  # macro_signal_active default
+        3,  # node_depth default (typical supply chain depth)
     ]
     return np.array(feats).reshape(1, -1)
 

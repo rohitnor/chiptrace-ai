@@ -116,8 +116,14 @@ export default function Dashboard() {
         <div className="grid grid-cols-3 gap-6">
           {/* Metric Tree */}
           <div className="col-span-2">
-            <div className="backdrop-blur-md bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#333333] rounded-lg p-6 transition-all">
-              <h2 className="text-lg font-semibold text-[#e0e0e0] mb-4 tracking-tight">Metric Tree Hierarchy</h2>
+            <div className="bg-gradient-to-br from-slate-900/40 via-slate-800/20 to-slate-900/40 border border-slate-700/30 rounded-xl p-6 backdrop-blur-sm shadow-xl">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-slate-200 tracking-tight">Supply Chain Metric Tree</h2>
+                <div className="flex items-center space-x-2 text-xs text-slate-400">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>Interactive View</span>
+                </div>
+              </div>
               <MetricTreeCanvas
                 nodes={treeData?.nodes || []}
                 onNodeClick={setSelectedNode}
