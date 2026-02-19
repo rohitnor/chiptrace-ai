@@ -1,0 +1,1 @@
+{"features": ["fab_utilization_score", "wafer_supplier_score", "port_congestion_score", "lta_coverage_pct", "spot_exposure_pct", "macro_signal_severity", "die_bank_score", "tier1_stock_days", "financial_health", "bullwhip_index", "disruption_encoded", "chip_node_risk", "fill_rate"], "rmse": 5.836863566835987, "mae": 3.8676652252223964, "r2": 0.6399292349815369}

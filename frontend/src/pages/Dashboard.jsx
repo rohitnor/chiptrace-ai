@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
-import { useMetricTree, useAlerts, usePredictions } from '../hooks';
+import { useMetricTree, usePredictions } from '../hooks';
 import MetricTreeCanvas from '../components/MetricTree/TreeCanvas';
-import AlertBanner from '../components/MetricTree/AlertBanner';
 import PredictionCards from '../components/Predictions/PredictionCards';
+import DisruptionsPanel from '../components/MetricTree/DisruptionsPanel';
 import SimulatePanel from '../components/MetricTree/SimulatePanel';
 
 export default function Dashboard() {
   const { data: treeData, loading, error, refetch } = useMetricTree();
-  const { alerts } = useAlerts();
-  const { predictions } = usePredictions();
+  const { predictions, loading: predLoading } = usePredictions();
   const [selectedNode, setSelectedNode] = useState(null);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mx-auto mb-4" />
-          <p className="text-gray-500">Loading metric tree...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border border-[#333333] border-t-[#e0e0e0] mx-auto mb-6" />
+          <p className="text-[#888888] text-lg tracking-wide">Analyzing supply chain metrics...</p>
         </div>
       </div>
     );
@@ -24,84 +23,126 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-        <h3 className="text-red-800 font-semibold">Cannot connect to backend</h3>
-        <p className="text-red-600 text-sm mt-1">{error}</p>
-        <p className="text-gray-500 text-xs mt-2">Make sure backend is running on port 8000</p>
+      <div className="min-h-screen bg-[#000000] flex items-center justify-center p-4">
+        <div className="backdrop-blur-md bg-[#1a1a1a] border border-[#333333] rounded-lg p-8 max-w-md">
+          <h3 className="text-[#ff6b6b] font-semibold text-lg">Connection Error</h3>
+          <p className="text-[#d0d0d0] text-sm mt-2">{error}</p>
+          <p className="text-[#777777] text-xs mt-3">Ensure the backend is running on port 8000</p>
+          <button
+            onClick={refetch}
+            className="mt-6 w-full py-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] text-[#d0d0d0] text-sm font-medium rounded-lg transition-all border border-[#333333]"
+          >
+            Retry Connection
+          </button>
+        </div>
       </div>
     );
   }
 
   const rootScore = treeData?.root_score || 0;
   const rootStatus = treeData?.root_status || 'unknown';
+  const redNodeCount = treeData?.nodes?.filter(n => n.status === 'red').length || 0;
+  const amberNodeCount = treeData?.nodes?.filter(n => n.status === 'amber').length || 0;
+  const totalNodes = treeData?.total_nodes || 0;
 
-  const statusColor = {
-    green: 'bg-green-50 border-green-200 text-green-800',
-    amber: 'bg-amber-50 border-amber-200 text-amber-800',
-    red: 'bg-red-50 border-red-200 text-red-800',
-  }[rootStatus] || 'bg-gray-50 border-gray-200 text-gray-800';
+  const getStatusGlow = (status) => {
+    const glows = {
+      red: 'from-red-600/40 to-transparent',
+      amber: 'from-amber-600/40 to-transparent',
+      green: 'from-green-600/40 to-transparent',
+    };
+    return glows[status] || 'from-slate-600/40 to-transparent';
+  };
+
+  const getStatusAccent = (status) => {
+    const accents = {
+      red: 'text-red-400 border-red-900/50',
+      amber: 'text-amber-400 border-amber-900/50',
+      green: 'text-green-400 border-green-900/50',
+    };
+    return accents[status] || 'text-slate-400 border-slate-800/50';
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Supply Chain Health Dashboard</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Automotive Legacy Semiconductor — OEM ↔ N-Tier Metric Tree
-          </p>
+    <div className="min-h-screen bg-[#000000] p-8">
+      <div className="max-w-8xl mx-auto space-y-8">
+        
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-[#f5f5f5] tracking-tight">Supply Chain Intelligence</h1>
+            <p className="text-[#888888] text-sm mt-2">
+              Automotive Legacy Semiconductor | OEM ↔ N-Tier Metric Tree Analysis
+            </p>
+          </div>
+          <button
+            onClick={refetch}
+            className="px-4 py-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] text-[#d0d0d0] text-sm font-medium rounded-lg border border-[#333333] transition-all duration-300"
+          >
+            Refresh
+          </button>
         </div>
-        <button
-          onClick={refetch}
-          className="px-4 py-2 bg-blue-700 text-white text-sm rounded-lg hover:bg-blue-800 transition"
-        >
-          Refresh Tree
-        </button>
-      </div>
 
-      {/* Alert Banner */}
-      {alerts.length > 0 && <AlertBanner alerts={alerts} />}
+        {/* KPI Grid */}
+        <div className="grid grid-cols-4 gap-4">
+          <div className="backdrop-blur-md bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#333333] rounded-lg p-6 transition-all">
+            <p className="text-[#888888] text-xs font-semibold uppercase tracking-widest">System Health</p>
+            <p className="text-5xl font-black mt-3 text-[#e0e0e0]">
+              {rootScore.toFixed(0)}
+            </p>
+            <p className="text-[#777777] text-xs mt-2 capitalize">{rootStatus} Status</p>
+          </div>
 
-      {/* KPI Row */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className={`border rounded-xl p-5 ${statusColor}`}>
-          <p className="text-xs font-medium uppercase tracking-wide opacity-70">Root Health Score</p>
-          <p className="text-4xl font-bold mt-2">{rootScore.toFixed(1)}</p>
-          <p className="text-sm mt-1 capitalize font-medium">{rootStatus}</p>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <p className="text-xs text-gray-500 uppercase tracking-wide">RED Nodes</p>
-          <p className="text-4xl font-bold text-red-600 mt-2">
-            {treeData?.nodes?.filter(n => n.status === 'red').length || 0}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">Critical alerts</p>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <p className="text-xs text-gray-500 uppercase tracking-wide">AMBER Nodes</p>
-          <p className="text-4xl font-bold text-amber-600 mt-2">
-            {treeData?.nodes?.filter(n => n.status === 'amber').length || 0}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">Monitoring</p>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <p className="text-xs text-gray-500 uppercase tracking-wide">Total Nodes</p>
-          <p className="text-4xl font-bold text-gray-800 mt-2">{treeData?.total_nodes || 0}</p>
-          <p className="text-sm text-gray-500 mt-1">In metric tree</p>
-        </div>
-      </div>
+          <div className="backdrop-blur-md bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#333333] rounded-lg p-6 transition-all">
+            <p className="text-[#888888] text-xs font-semibold uppercase tracking-widest">Critical</p>
+            <p className="text-5xl font-black mt-3 text-[#ff6b6b]">{redNodeCount}</p>
+            <p className="text-[#777777] text-xs mt-2">nodes at risk</p>
+          </div>
 
-      {/* Metric Tree + Predictions */}
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2 bg-white border border-gray-200 rounded-xl p-4">
-          <h2 className="text-base font-semibold text-gray-800 mb-3">Metric Tree</h2>
-          <MetricTreeCanvas
-            nodes={treeData?.nodes || []}
-            onNodeClick={setSelectedNode}
-          />
+          <div className="backdrop-blur-md bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#333333] rounded-lg p-6 transition-all">
+            <p className="text-[#888888] text-xs font-semibold uppercase tracking-widest">Monitoring</p>
+            <p className="text-5xl font-black mt-3 text-[#e0e0e0]">{amberNodeCount}</p>
+            <p className="text-[#777777] text-xs mt-2">under observation</p>
+          </div>
+
+          <div className="backdrop-blur-md bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#333333] rounded-lg p-6 transition-all">
+            <p className="text-[#888888] text-xs font-semibold uppercase tracking-widest">Total Nodes</p>
+            <p className="text-5xl font-black mt-3 text-[#e0e0e0]">{totalNodes}</p>
+            <p className="text-[#777777] text-xs mt-2">in hierarchy</p>
+          </div>
         </div>
-        <div className="space-y-4">
-          <PredictionCards predictions={predictions} selectedNode={selectedNode} />
-          <SimulatePanel onSimulated={refetch} />
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-3 gap-6">
+          {/* Metric Tree */}
+          <div className="col-span-2">
+            <div className="backdrop-blur-md bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#333333] rounded-lg p-6 transition-all">
+              <h2 className="text-lg font-semibold text-[#e0e0e0] mb-4 tracking-tight">Metric Tree Hierarchy</h2>
+              <MetricTreeCanvas
+                nodes={treeData?.nodes || []}
+                onNodeClick={setSelectedNode}
+              />
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="space-y-6">
+            {/* Predictions */}
+            <div className="backdrop-blur-md bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#333333] rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-[#e0e0e0] mb-4 tracking-tight">ML Predictions</h2>
+              <PredictionCards 
+                predictions={predictions} 
+                selectedNode={selectedNode}
+                loading={predLoading}
+              />
+            </div>
+
+            {/* Disruptions */}
+            <DisruptionsPanel />
+
+            {/* Simulate */}
+            <SimulatePanel onSimulated={refetch} />
+          </div>
         </div>
       </div>
     </div>
