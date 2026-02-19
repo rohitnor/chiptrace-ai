@@ -23,6 +23,18 @@
 12. [Tech Stack](#12-tech-stack)
 
 ---
+How to run the website?
+1) Run the Backend server:
+-cd into backend folder.
+-".\venv\Scripts\activate" paste in terminal.
+-"$env:DATABASE_URL="sqlite:///./chiptrace.db"" paste in terminal.
+-"uvicorn main:app --reload --port 8000" paste in terminal to start the server.
+
+2) Run the Frontend:
+-create a new terminal.
+-cd into frontend folder.
+-"npm start" paste in terminal.
+
 
 ## 1. What is ChipTrace AI
 
