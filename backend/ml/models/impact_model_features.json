@@ -1,0 +1,1 @@
+{"features": ["predicted_resolution_days", "actual_resolution_days", "oem_daily_demand_units", "oem_safety_stock_days", "chip_criticality", "alternate_chip_available", "requalification_weeks", "affected_car_models"], "rmse": 9.215560853371372, "mae": 8.119733173618982, "r2": 0.6206754061639117}
