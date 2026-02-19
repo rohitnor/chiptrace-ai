@@ -1,0 +1,1 @@
+{"features": ["disruption_encoded", "severity_encoded", "die_bank_score", "tier1_stock_days", "lta_flex_available", "is_single_source", "macro_signal_active", "node_depth"], "rmse": 16.899207749891705, "mae": 14.136092637686383, "r2": -0.17999437751157732}

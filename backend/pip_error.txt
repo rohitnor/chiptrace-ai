@@ -1,0 +1,27 @@
+﻿Requirement already satisfied: numpy in d:\dsu engineering stuff\semester 4\hackathon 20th feb\chiptrace-ai\backend\venv\lib\site-packages (2.4.2)
+Requirement already satisfied: pandas in d:\dsu engineering stuff\semester 4\hackathon 20th feb\chiptrace-ai\backend\venv\lib\site-packages (3.0.1)
+Requirement already satisfied: python-dateutil>=2.8.2 in d:\dsu engineering stuff\semester 4\hackathon 20th feb\chiptrace-ai\backend\venv\lib\site-packages (from pandas) (2.9.0.post0)
+Requirement already satisfied: tzdata in d:\dsu engineering stuff\semester 4\hackathon 20th feb\chiptrace-ai\backend\venv\lib\site-packages (from pandas) (2025.3)
+Requirement already satisfied: six>=1.5 in d:\dsu engineering stuff\semester 4\hackathon 20th feb\chiptrace-ai\backend\venv\lib\site-packages (from python-dateutil>=2.8.2->pandas) (1.17.0)
+.\venv\Scripts\pip : 
+At line:1 char:1
++ .\venv\Scripts\pip install 
+numpy pandas 2>&1 | Out-File 
+-FilePath "pi ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (:String  
+  ) [], RemoteException
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+[notice] A new release of 
+pip is available: 25.3 -> 
+26.0.1
+[notice] To update, run: 
+D:\DSU Engineering 
+Stuff\Semester 4\Hackathon 
+20th FEB\chiptrace-ai\backend
+\venv\Scripts\python.exe -m 
+pip install --upgrade pip
